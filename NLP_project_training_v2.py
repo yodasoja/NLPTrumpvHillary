@@ -8,7 +8,7 @@ trainingSet = input1.readlines()
 
 #print(trainingSet)
 
-size1=len(trainingSet)
+size1 = len(trainingSet)
 
 trainingSetLower = []
 
@@ -16,22 +16,22 @@ for i in range(size1):
     tempTweet = trainingSet[i].lower()
     trainingSetLower.append(tempTweet)
 
-#print(trainingSetLower)
+# print(trainingSetLower)
 
-D_hashtag = ['strongertogether','voteforhillary','imwithher']
-R_hashtag = ['draintheswamp','makeamericagreatagain']
+D_hashtag = ['strongertogether', 'voteforhillary', 'imwithher']
+R_hashtag = ['draintheswamp', 'makeamericagreatagain']
 feature_hashtag = []
 
-D_keyword = ['grope','kkk']
-R_keyword = ['benghazi','foundation']
+D_keyword = ['grope', 'kkk']
+R_keyword = ['benghazi', 'foundation']
 feature_keyword = []
 
-D_JJ = ['disgusting','racist']
-R_JJ = ['dishonest','corrupt']
+D_JJ = ['disgusting', 'racist']
+R_JJ = ['dishonest', 'corrupt']
 feature_JJ = []
 
-D_beneficiary = ['top 1','white supremacist']
-R_beneficiary = ['illegal immigrant','muslim immigrant']
+D_beneficiary = ['top 1', 'white supremacist']
+R_beneficiary = ['illegal immigrant', 'muslim immigrant']
 feature_beneficiary = []
 
 
@@ -70,40 +70,40 @@ def keyword(tweet1):
     return flag2
 
 
-def JJ(tweet1, tweet2):
-    len1 = len(tweet1)
-    JJ_list = []
-    for i in range(len1):
-        if 'JJ' == tweet2[i][1]:
-            JJ_list.append(tweet2[i][0])
+def jj(tweet_tokens, tweet_pos_tags):
+    len1 = len(tweet_tokens)
+    jj_list = []
+    for myi in range(len1):
+        if 'JJ' == tweet_pos_tags[myi][1]:
+            jj_list.append(tweet_pos_tags[myi][0])
 
-    len2 = len(JJ_list)
-    for i in range(len1):
-        if ('donald' == tweet1[i]) or ('trump' == tweet1[i]):
+    len2 = len(jj_list)
+    for myi in range(len1):
+        if ('donald' == tweet_tokens[myi]) or ('trump' == tweet_tokens[myi]):
             name1 = 1
             break
-        elif ('hillary' == tweet1[i]) or ('clinton' == tweet1[i]):
-            name1=-1
+        elif ('hillary' == tweet_tokens[myi]) or ('clinton' == tweet_tokens[myi]):
+            name1 = -1
             break
         else:
             name1 = 0
 
-    JJ1 = 0
-    for i in range(len2):
-        if (JJ_list[i] == D_JJ[0]) or (JJ_list[i] == D_JJ[1]):
-            JJ1 = 1
+    jj1 = 0
+    for myi in range(len2):
+        if (jj_list[myi] == D_JJ[0]) or (jj_list[myi] == D_JJ[1]):
+            jj1 = 1
             break
-        elif (JJ_list[i] == R_JJ[0]) or (JJ_list[i] == R_JJ[1]):
-            JJ1 = -1
+        elif (jj_list[myi] == R_JJ[0]) or (jj_list[myi] == R_JJ[1]):
+            jj1 = -1
             break
         else:
-            JJ1 = 0
+            jj1 = 0
 
     #print(JJ_list)
 
-    if (1 == name1) and (1 == JJ1):
+    if (1 == name1) and (1 == jj1):
         flag3 = 1
-    elif (-1 == name1) and (-1 == JJ1):
+    elif (-1 == name1) and (-1 == jj1):
         flag3 = -1
     else:
         flag3 = 0
@@ -168,24 +168,24 @@ for i in range(size1):
     print('The tokens are:')
     print(tokens)
 
-    lmtzr=WordNetLemmatizer()
-    len_tokens=len(tokens)
-    lemmas=[]
-    pos_tags=[]
+    lmtzr = WordNetLemmatizer()
+    len_tokens = len(tokens)
+    lemmas = []
+    pos_tags = []
     for j in range(len_tokens):
-        temp_str1=lmtzr.lemmatize(tokens[j])
+        temp_str1 = lmtzr.lemmatize(tokens[j])
         lemmas.append(temp_str1)
 
     print('The lemmas are:')
     print(lemmas)
 
     pos_tags = pos_tag(tokens)
-    print('The POS taggings are:')
+    print('The POS tags are:')
     print(pos_tags)
 
     flag1_output = hashtag(tokens)
     flag2_output = keyword(lemmas)
-    flag3_output = JJ(tokens, pos_tags)
+    flag3_output = jj(tokens, pos_tags)
     flag5_output = beneficiary(tokens)
 
     feature_hashtag.append(flag1_output)
@@ -199,18 +199,18 @@ for i in range(size1):
 #print(feature_JJ)
 #print(feature_beneficiary)
 
-agent=['N/A','the electoral college','N/A','N/A','N/A',
-       'N/A','N/A','N/A','N/A','i',
-       'N/A','N/A','N/A','N/A','N/A',
-       'the racist trump supporters','N/A','kareem abdul-jabbar','racist trump fans','N/A',
-       'donald','trump','trump','N/A','N/A',
-       'women','intelligent women','southern women','women','latino',
-       'N/A','the islamist 5th column','N/A','N/A','N/A',
-       'N/A','hillary clinton','N/A','N/A','hillary clinton',
-       'N/A','N/A','N/A','N/A','N/A',
-       'crooked hillary','N/A','N/A','N/A','N/A',
-       'N/A','N/A','democrats','someone','she',
-       'veterans','veterans','10000 veterans','all military and veterans','cops',
+agent=['N/A', 'the electoral college', 'N/A', 'N/A', 'N/A',
+       'N/A', 'N/A', 'N/A', 'N/A', 'i',
+       'N/A', 'N/A', 'N/A', 'N/A', 'N/A',
+       'the racist trump supporters', 'N/A', 'kareem abdul-jabbar', 'racist trump fans', 'N/A',
+       'donald', 'trump', 'trump', 'N/A', 'N/A',
+       'women', 'intelligent women', 'southern women', 'women', 'latino',
+       'N/A', 'the islamist 5th column', 'N/A', 'N/A', 'N/A',
+       'N/A', 'hillary clinton', 'N/A', 'N/A', 'hillary clinton',
+       'N/A', 'N/A', 'N/A', 'N/A', 'N/A',
+       'crooked hillary', 'N/A', 'N/A', 'N/A', 'N/A',
+       'N/A', 'N/A', 'democrats', 'someone', 'she',
+       'veterans', 'veterans', '10000 veterans', 'all military and veterans', 'cops',
        'N/A', 'N/A', 'N/A', 'N/A', 'N/A',
        'N/A', 'N/A', 'N/A', 'N/A', 'N/A',
        'N/A', 'N/A', 'N/A', 'N/A', 'N/A',
@@ -218,13 +218,13 @@ agent=['N/A','the electoral college','N/A','N/A','N/A',
 
 len_list1 = len(agent)
 
-feature_agent=[]
+feature_agent = []
 
 for i in range(len_list1):
     temp1 = agent[i]
     #print(temp1)
 
-    if (temp1 == 'N/A'):
+    if 'N/A' == temp1:
         print('The agents are N/A.')
         print('The hypernymy of the agents are N/A.')
         print('The hyponymy of the agents are N/A.')
@@ -252,42 +252,42 @@ for i in range(len_list1):
 
     # print(search_str1)
 
-        if (('women' in search_str1) or ('latinos' in search_str1)):
+        if ('women' in search_str1) or ('latinos' in search_str1):
             flag6 = 1
             feature_agent.append(flag6)
-        elif (('veterans' in search_str1) or ('cops' in search_str1)):
+        elif ('veterans' in search_str1) or ('cops' in search_str1):
             flag6 = -1
             feature_agent.append(flag6)
         else:
             flag6 = 0
             feature_agent.append(flag6)
 
-output1=open('feature1_hashtag.txt','w')
+output1 = open('feature1_hashtag.txt', 'w')
 for i in range(size1):
-    temp1=feature_hashtag[i]
+    temp1 = feature_hashtag[i]
     output1.write(str(temp1)+" ")
 output1.close()
 
-output2=open('feature2_keyword.txt','w')
+output2 = open('feature2_keyword.txt', 'w')
 for i in range(size1):
-    temp2=feature_keyword[i]
+    temp2 = feature_keyword[i]
     output2.write(str(temp2)+" ")
 output2.close()
 
-output3=open('feature3_JJ.txt','w')
+output3 = open('feature3_JJ.txt', 'w')
 for i in range(size1):
-    temp3=feature_JJ[i]
+    temp3 = feature_JJ[i]
     output3.write(str(temp3)+" ")
 output3.close()
 
-output5=open('feature5_BENEFICIARY.txt','w')
+output5 = open('feature5_BENEFICIARY.txt', 'w')
 for i in range(size1):
-    temp5=feature_beneficiary[i]
+    temp5 = feature_beneficiary[i]
     output5.write(str(temp5)+" ")
 output5.close()
 
-output6=open('feature6_AGENT.txt','w')
+output6 = open('feature6_AGENT.txt', 'w')
 for i in range(size1):
-    temp6=feature_agent[i]
+    temp6 = feature_agent[i]
     output6.write(str(temp6)+" ")
 output6.close()
