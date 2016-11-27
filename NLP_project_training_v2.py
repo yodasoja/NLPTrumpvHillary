@@ -162,6 +162,48 @@ def beneficiary(tweet1):
     return flag5
 
 
+# feature 4
+def syntactic_parse_np(tweet_tokens, tweet_pos_tags):
+    #parse and look for key noun phrases
+    len1 = len(tweet_tokens)
+    np_list = []
+    for myi in range(len1):
+        if 'NP' == tweet_pos_tags[myi][1]:
+            np_list.append(tweet_pos_tags[myi][0])
+
+    len2 = len(np_list)
+    for myi in range(len1):
+        if ('donald' == tweet_tokens[myi]) or ('trump' == tweet_tokens[myi]):
+            name1 = 1
+            break
+        elif ('hillary' == tweet_tokens[myi]) or ('clinton' == tweet_tokens[myi]):
+            name1 = -1
+            break
+        else:
+            name1 = 0
+
+    jj1 = 0
+    for myi in range(len2):
+        if (np_list[myi] == D_JJ[0]) or (np_list[myi] == D_JJ[1]):
+            jj1 = 1
+            break
+        elif (np_list[myi] == R_JJ[0]) or (np_list[myi] == R_JJ[1]):
+            jj1 = -1
+            break
+        else:
+            jj1 = 0
+
+    # print(JJ_list)
+
+    if (1 == name1) and (1 == jj1):
+        flag4 = 1
+    elif (-1 == name1) and (-1 == jj1):
+        flag4 = -1
+    else:
+        flag4 = 0
+
+    return flag4
+
 for i in range(size1):
     tempTweet1 = trainingSetLower[i]
     tokens = nltk.word_tokenize(tempTweet1)
