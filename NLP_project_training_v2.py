@@ -3,20 +3,23 @@ from nltk import word_tokenize, pos_tag
 from nltk.stem.wordnet import WordNetLemmatizer
 from nltk.corpus import wordnet as wn
 
+# create an array with tweets
 input1 = open('tweet_training_set.txt', 'r')
 trainingSet = input1.readlines()
-
-#print(trainingSet)
-
 size1 = len(trainingSet)
-
 trainingSetLower = []
-
 for i in range(size1):
     tempTweet = trainingSet[i].lower()
     trainingSetLower.append(tempTweet)
 
-# print(trainingSetLower)
+# create an array of all the classifications of the tweets, same order as the array of tweets
+input2 = open('classification_training_set.txt', 'r')
+training_set_class = input2.readlines()
+size2 = len(training_set_class)
+if size1 != size2:
+    print('Size of training tweets and training classifications aren\'t equal! Please adjust files.')
+training_set_class = open('classification_training_set.txt', 'r').read().split('\n')
+
 
 D_hashtag = ['strongertogether', 'voteforhillary', 'imwithher']
 R_hashtag = ['draintheswamp', 'makeamericagreatagain']
@@ -29,6 +32,18 @@ feature_keyword = []
 D_JJ = ['disgusting', 'racist']
 R_JJ = ['dishonest', 'corrupt']
 feature_JJ = []
+
+positive_vp = ['support', 'vote', 'stand', 'fix']
+negative_vp = ['avoid', 'grope', 'stop']
+positive_nn = ['women']
+negative_nn = ['daughter']
+feature_np = []
+pro_trump_nns = []
+pro_clinton_nns = []
+pro_trump_vbs = []
+pro_clinton_vbs = []
+neutral_nns = []
+neutral_vbs = []
 
 D_beneficiary = ['top 1', 'white supremacist']
 R_beneficiary = ['illegal immigrant', 'muslim immigrant']
@@ -163,49 +178,56 @@ def beneficiary(tweet1):
 
 
 # feature 4
-def syntactic_parse_np(tweet_tokens, tweet_pos_tags):
-    #parse and look for key noun phrases
+def syntactic_parse_np(tweet_tokens, tweet_pos_tags, current_index):
+    #parse and look for key nouns and verbs
     len1 = len(tweet_tokens)
+    # create temp arrays for nouns and adjectives
+    tmp_nns = []
+    tmp_vbs = []
+
     np_list = []
     for myi in range(len1):
-        if 'NP' == tweet_pos_tags[myi][1]:
-            np_list.append(tweet_pos_tags[myi][0])
+        if 'NN' == tweet_pos_tags[myi][1]:
+            tmp_nns.append(tweet_pos_tags[myi][0])
+        elif 'VB' in tweet_pos_tags[myi][1]:
+            tmp_vbs.append(tweet_pos_tags[myi][0])
 
-    len2 = len(np_list)
-    for myi in range(len1):
-        if ('donald' == tweet_tokens[myi]) or ('trump' == tweet_tokens[myi]):
-            name1 = 1
-            break
-        elif ('hillary' == tweet_tokens[myi]) or ('clinton' == tweet_tokens[myi]):
-            name1 = -1
-            break
-        else:
-            name1 = 0
+    print('tmp_nns:')
+    for myi in range(len(tmp_nns)):
+        print(tmp_nns[myi] + ', ')
+    print('tmp_vbs:')
+    for myi in range(len(tmp_vbs)):
+        print(tmp_vbs[myi] + ', ')
 
-    jj1 = 0
-    for myi in range(len2):
-        if (np_list[myi] == D_JJ[0]) or (np_list[myi] == D_JJ[1]):
-            jj1 = 1
-            break
-        elif (np_list[myi] == R_JJ[0]) or (np_list[myi] == R_JJ[1]):
-            jj1 = -1
-            break
-        else:
-            jj1 = 0
-
-    # print(JJ_list)
-
-    if (1 == name1) and (1 == jj1):
-        flag4 = 1
-    elif (-1 == name1) and (-1 == jj1):
-        flag4 = -1
-    else:
-        flag4 = 0
-
-    return flag4
+    if '1' == training_set_class[current_index]:
+        print('Appending tmp arrays to clinton arrays')
+        for myj in range(len(tmp_nns)):
+            pro_clinton_nns.append(tmp_nns[myj])
+        for myj in range(len(tmp_vbs)):
+            pro_clinton_vbs.append(tmp_vbs[myj])
+    elif '-1' == training_set_class[current_index]:
+        print('Appending tmp arrays to trump arrays:')
+        for myj in range(len(tmp_nns)):
+            pro_trump_nns.append(tmp_nns[myj])
+        for myj in range(len(tmp_vbs)):
+            pro_trump_vbs.append(tmp_vbs[myj])
+    elif '0' == training_set_class[current_index]:  # This is a zero (neutral) tweet
+        print('Appending tmp arrays to neutral arrays')
+        for myj in range(len(tmp_nns)):
+            neutral_nns.append(tmp_nns[myj])
+        for myj in range(len(tmp_vbs)):
+            neutral_vbs.append(tmp_vbs[myj])
+    print('Finished with checking the classification (' + training_set_class[current_index] +
+          '). Returning from feature 4....')
+    return 0
 
 for i in range(size1):
     tempTweet1 = trainingSetLower[i]
+    temp_tweet_class = training_set_class[i]
+
+    print('tweet classification = ' + temp_tweet_class + ' and the object type is ')
+    print(type(temp_tweet_class))
+
     tokens = nltk.word_tokenize(tempTweet1)
     print('The tokens are:')
     print(tokens)
@@ -222,17 +244,26 @@ for i in range(size1):
     print(lemmas)
 
     pos_tags = pos_tag(tokens)
+    lemma_pos_tags = nltk.pos_tag(lemmas)
     print('The POS tags are:')
     print(pos_tags)
+    print('The POS tags for the lemma are:')
+    print(lemma_pos_tags)
 
     flag1_output = hashtag(tokens)
     flag2_output = keyword(lemmas)
     flag3_output = jj(tokens, pos_tags)
+    flag4_output = syntactic_parse_np(tokens, lemma_pos_tags, i)
     flag5_output = beneficiary(tokens)
+
+    print('Pro Clinton nns:')
+    for i in range(len(pro_clinton_nns)):
+        print(pro_clinton_nns[i] + ', ')
 
     feature_hashtag.append(flag1_output)
     feature_keyword.append(flag2_output)
     feature_JJ.append(flag3_output)
+    feature_np.append(flag4_output)
     feature_beneficiary.append(flag5_output)
 
 
@@ -267,9 +298,9 @@ for i in range(len_list1):
     #print(temp1)
 
     if 'N/A' == temp1:
-        print('The agents are N/A.')
-        print('The hypernymy of the agents are N/A.')
-        print('The hyponymy of the agents are N/A.')
+        #print('The agents are N/A.')
+        #print('The hypernymy of the agents are N/A.')
+        #print('The hyponymy of the agents are N/A.')
         flag6 = 0
         feature_agent.append(flag6)
 
@@ -333,3 +364,19 @@ for i in range(size1):
     temp6 = feature_agent[i]
     output6.write(str(temp6)+" ")
 output6.close()
+
+print('Pro Trump vbs:')
+for i in range(len(pro_trump_vbs)):
+    print(pro_trump_vbs[i], end=", ")
+
+print('\nPro Trump nns:')
+for i in range(len(pro_trump_nns)):
+    print(pro_trump_nns[i], end=", ")
+
+print('\nPro Clinton nns:')
+for i in range(len(pro_clinton_nns)):
+    print(pro_clinton_nns[i], end=", ")
+
+print('\nPro Clinton vbs:')
+for i in range(len(pro_clinton_vbs)):
+    print(pro_clinton_vbs[i], end=", ")
