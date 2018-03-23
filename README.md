@@ -9,6 +9,7 @@ Open a cmd terminal to the location of the project folder containing the followi
 and the text files `classification_training_set.txt`, `classification_testing_set.txt`, `tweet_training_set.txt`, and `tweet_testing_set.txt`
 
 Then run the following commands:
+
 `c:\python34\python naive_name_algorithm.py`
 This is the initial analysis, using the baseline system. It displays the error rate on the terminal.
 
